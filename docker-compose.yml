@@ -1,4 +1,4 @@
-version: '2.1'
+version: '3'
 
 volumes:
   db-data:
@@ -16,21 +16,25 @@ services:
     volumes:
       - db-data:/var/lib/mysql
     environment:
-      MYSQL_ROOT_PASSWORD: prestashop
-      MYSQL_DATABASE: prestashop
+      MYSQL_ROOT_PASSWORD: 123Asd.*
+      MYSQL_DATABASE: erenorco_db
+      MYSQL_USER: erenorco_user
+      MYSQL_PASSWORD: 123Asd.*
     restart: unless-stopped
 
   keycloak:
+    container_name: cnt_keycloak
     image: quay.io/keycloak/keycloak:19.0.3
     environment:
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN:-admin}
-      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-123Asd.*}
     command:
       - start-dev
     ports:
       - "8003:8080"
 
   prestashop-git:
+    container_name: cnt_prestashop-git
     hostname: ${PS_HOSTNAME:-localhost}
     build:
       dockerfile: .docker/Dockerfile
@@ -43,10 +47,10 @@ services:
     environment:
       DISABLE_MAKE: ${DISABLE_MAKE:-0}
       PS_INSTALL_AUTO: ${PS_INSTALL_AUTO:-1}
-      DB_PASSWD: ${DB_PASSWD:-prestashop}
-      DB_NAME: ${DB_NAME:-prestashop}
+      DB_PASSWD: ${DB_PASSWD:-123Asd.*}
+      DB_NAME: ${DB_NAME:-erenorco_db}
       DB_SERVER: ${DB_SERVER:-mysql}
-      DB_PREFIX: ${DB_PREFIX:-ps_}
+      DB_PREFIX: ${DB_PREFIX:-ec_}
       PS_DOMAIN: ${PS_DOMAIN:-localhost:8001}
       PS_FOLDER_INSTALL: ${PS_FOLDER_INSTALL:-install-dev}
       PS_FOLDER_ADMIN: ${PS_FOLDER_ADMIN:-admin-dev}
@@ -55,8 +59,8 @@ services:
       PS_DEV_MODE: ${PS_DEV_MODE:-1}
       PS_ENABLE_SSL: ${PS_ENABLE_SSL:-0}
       PS_ERASE_DB: ${PS_ERASE_DB:-0}
-      ADMIN_MAIL: ${ADMIN_MAIL:-demo@prestashop.com}
-      ADMIN_PASSWD: ${ADMIN_PASSWD:-Correct Horse Battery Staple}
+      ADMIN_MAIL: ${ADMIN_MAIL:-ozkanciftci91@hotmail.com}
+      ADMIN_PASSWD: ${ADMIN_PASSWD:-123Asd.*}
     command: ["/tmp/wait-for-it.sh", "--timeout=60", "--strict", "mysql:3306", "--", "/tmp/docker_run_git.sh"]
     ports:
       - "8001:80"
@@ -68,13 +72,16 @@ services:
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
-    ports:
-      - "8080:80"
+    container_name: cnt_phpmyadmin
+    depends_on:
+      - mysql
     environment:
       PMA_HOST: mysql
       PMA_USER: root
-      PMA_PASSWORD: prestashop
-      MYSQL_ROOT_PASSWORD: prestashop
+      PMA_PORT: 3306
+      PMA_ARBITRARY: 1
+      PMA_PASSWORD: 123Asd.*
+      MYSQL_ROOT_PASSWORD: 123Asd.*
     restart: unless-stopped
-    depends_on:
-      - mysql
+    ports:
+      - "8080:80"
